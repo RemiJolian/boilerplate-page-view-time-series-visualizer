@@ -5,7 +5,11 @@ from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
 # Import data (Make sure to parse dates. Consider setting index column to 'date'.)
-df = None
+file_path = (
+           "D:\\1-Programming\\1-Training_Files & Codes\\Python\\1-Ramin's Codes\\Data_Analysis\\"
+            "5 Projects\\boilerplate-page-view-time-series-visualizer\\fcc-forum-pageviews.csv")
+
+df = pd.read_csv(file_path)
 
 # Clean data
 df = None
