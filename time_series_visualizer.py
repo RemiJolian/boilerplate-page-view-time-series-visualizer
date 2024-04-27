@@ -10,17 +10,24 @@ file_path = (
             "5 Projects\\boilerplate-page-view-time-series-visualizer\\fcc-forum-pageviews.csv")
 
 df = pd.read_csv(file_path)
+#df['date'] = pd.to_datetime(df['date'])
+df.set_index('date')
 
-# Clean data
-df = None
+# Clean the data by filtering out days when the page views were in the top 2.5% of
+# the dataset or bottom 2.5% of the dataset.
+# Filter out days in the top 2.5% and bottom 2.5%
+top_threshold = df['value'].quantile(0.975)
+bottom_threshold = df['value'].quantile(0.025)
+
+# Filter to keep only the top 2.5% and bottom 2.5% of page views
+df = df.loc[(df['value'] < bottom_threshold) | (df['value'] > top_threshold)]
 
 
 def draw_line_plot():
-    # Draw line plot
-
-
-
-
+    fig, ax = plt.subplots(figsize=(16, 9))  # Create a figure and axis
+    df.plot(ax=ax, title='Daily freeCodeCamp Forum Page Views 5/2016-12/2019')
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Page Views')
 
     # Save image and return fig (don't change this part)
     fig.savefig('line_plot.png')
