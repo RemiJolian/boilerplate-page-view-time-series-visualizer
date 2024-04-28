@@ -9,9 +9,9 @@ file_path = (
            "D:\\1-Programming\\1-Training_Files & Codes\\Python\\1-Ramin's Codes\\Data_Analysis\\"
             "5 Projects\\boilerplate-page-view-time-series-visualizer\\fcc-forum-pageviews.csv")
 
-df = pd.read_csv(file_path)
+df = pd.read_csv(file_path, parse_dates=['date'], index_col='date')
 #df['date'] = pd.to_datetime(df['date'])
-df.set_index('date')
+#df.set_index('date')
 
 # Clean the data by filtering out days when the page views were in the top 2.5% of
 # the dataset or bottom 2.5% of the dataset.
@@ -20,27 +20,40 @@ top_threshold = df['value'].quantile(0.975)
 bottom_threshold = df['value'].quantile(0.025)
 
 # Filter to keep only the top 2.5% and bottom 2.5% of page views
-df = df.loc[(df['value'] < bottom_threshold) | (df['value'] > top_threshold)]
+df = df[(df['value'] >= bottom_threshold) & (df['value'] <= top_threshold)]
 
 
 def draw_line_plot():
-    fig, ax = plt.subplots(figsize=(16, 9))  # Create a figure and axis
-    df.plot(ax=ax, title='Daily freeCodeCamp Forum Page Views 5/2016-12/2019')
-    ax.set_xlabel('Date')
+    # Create a figure and axis with a specific size (16x9 inches)
+    fig, ax = plt.subplots(figsize=(10, 5))  
+    # Plot the data from the DataFrame 'df' on the specified axis with a title
+    ax.plot(df.index, df['value'], 'r', linewidth = 1)
+    # Set the label for the x-axis & y-axis and title
+    ax.set_title('Daily freeCodeCamp Forum Page Views 5/2016-12/2019')
+    ax.set_xlabel('Date')  
     ax.set_ylabel('Page Views')
 
     # Save image and return fig (don't change this part)
     fig.savefig('line_plot.png')
     return fig
 
+
 def draw_bar_plot():
     # Copy and modify data for monthly bar plot
-    df_bar = None
+    df['month'] = df.index.month
+    df['year'] = df.index.year
+    df_bar = df.groupby(['year', 'month'])['value'].mean()
+    df_bar = df_bar.unstack()
 
     # Draw bar plot
+    fig = df_bar.plot.bar(legend = True, figsize = (10,10), ylabel = 'Average Page Views',
+                          xlabel = 'Years').figure
+    plt.legend(['January', 'February', 'March', 'April',
+                 'May', 'June', 'July', 'August',
+                   'September', 'October', 'November', 'December'])
 
-
-
+    plt.xticks(fontsize = 10)
+    plt.yticks(fontsize = 15)
 
 
     # Save image and return fig (don't change this part)
@@ -48,16 +61,29 @@ def draw_bar_plot():
     return fig
 
 def draw_box_plot():
-    # Prepare data for box plots (this part is done!)
+    # Assuming df is defined and contains your data
     df_box = df.copy()
     df_box.reset_index(inplace=True)
     df_box['year'] = [d.year for d in df_box.date]
     df_box['month'] = [d.strftime('%b') for d in df_box.date]
 
     # Draw box plots (using Seaborn)
+    df_box['month_num'] = df_box['date'].dt.month
+    df_box = df_box.sort_values('month_num')
 
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+    # Year-wise Box Plot (Trend) with colorful boxes
+    axes[0] = sns.boxplot(x=df_box['year'], y=df_box['value'], ax=axes[0], palette="tab10")
+    # Month-wise Box Plot (Seasonality) with colorful boxes
+    axes[1] = sns.boxplot(x=df_box['month'], y=df_box['value'], ax=axes[1], palette="tab10")
 
+    axes[0].set_title('Year-wise Box Plot (Trend)')
+    axes[0].set_xlabel('Year')
+    axes[0].set_ylabel('Page Views')
 
+    axes[1].set_title('Month-wise Box Plot (Seasonality)')
+    axes[1].set_xlabel('Month')
+    axes[1].set_ylabel('Page Views')
 
 
     # Save image and return fig (don't change this part)
