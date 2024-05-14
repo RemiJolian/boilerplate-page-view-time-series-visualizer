@@ -1,18 +1,12 @@
 import unittest
 import time_series_visualizer
 import matplotlib as mpl
-import pandas as pd
 
 class DataCleaningTestCase(unittest.TestCase):
     def test_data_cleaning(self):
-        file_path = 'fcc-forum-pageviews.csv'
-
-        df = pd.read_csv(file_path, parse_dates=['date'], index_col='date')
-        # Sum the counts of each column to get the total number of rows
-        actual = df.count().sum()
+        actual = int(time_series_visualizer.df.count(numeric_only=True))
         expected = 1238
         self.assertEqual(actual, expected, "Expected DataFrame count after cleaning to be 1238.")
-
 
 class LinePlotTestCase(unittest.TestCase):
     def setUp(self):

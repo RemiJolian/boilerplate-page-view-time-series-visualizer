@@ -4,12 +4,21 @@ import seaborn as sns
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 
-# Import data (Make sure to parse dates. Consider setting index column to 'date'.)
-file_path = (
-           "D:\\1-Programming\\1-Training_Files & Codes\\Python\\1-Ramin's Codes\\Data_Analysis\\"
-            "5 Projects\\boilerplate-page-view-time-series-visualizer\\fcc-forum-pageviews.csv")
+import os
+
+# Get the directory where the script is located
+script_dir = os.path.dirname(__file__)
+
+# Change the working directory to the script's directory
+os.chdir(script_dir)
+
+# Now, the file_path should be a relative path from the script's location
+file_path = 'fcc-forum-pageviews.csv'
 
 df = pd.read_csv(file_path, parse_dates=['date'], index_col='date')
+
+# Import data (Make sure to parse dates. Consider setting index column to 'date'.)
+#....................................................
 #df['date'] = pd.to_datetime(df['date'])
 #df.set_index('date')
 

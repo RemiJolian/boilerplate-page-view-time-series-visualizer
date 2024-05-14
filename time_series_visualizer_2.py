@@ -1,4 +1,3 @@
-# time_series_visualizer.py
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -64,4 +63,35 @@ def draw_bar_plot():
     # Save image and return fig (don't change this part)
     fig.savefig('bar_plot.png')
     plt.show()
-    return
+    return fig
+
+
+def draw_box_plot():
+    # Assuming df is defined and contains your data
+    df_box = df.copy()
+    df_box.reset_index(inplace=True)
+    df_box['year'] = [d.year for d in df_box.date]
+    df_box['month'] = [d.strftime('%b') for d in df_box.date]
+
+    # Draw box plots (using Seaborn)
+    df_box['month_num'] = df_box['date'].dt.month
+    df_box = df_box.sort_values('month_num')
+
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+    # Year-wise Box Plot (Trend) with colorful boxes
+    axes[0] = sns.boxplot(x=df_box['year'], y=df_box['value'], ax=axes[0], palette="tab10")
+    # Month-wise Box Plot (Seasonality) with colorful boxes
+    axes[1] = sns.boxplot(x=df_box['month'], y=df_box['value'], ax=axes[1], palette="tab10")
+
+    axes[0].set_title('Year-wise Box Plot (Trend)')
+    axes[0].set_xlabel('Year')
+    axes[0].set_ylabel('Page Views')
+
+    axes[1].set_title('Month-wise Box Plot (Seasonality)')
+    axes[1].set_xlabel('Month')
+    axes[1].set_ylabel('Page Views')
+
+    # Save image and return fig (don't change this part)
+    fig.savefig('box_plot.png')
+    plt.show()
+    return fig
